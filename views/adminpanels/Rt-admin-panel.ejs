@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Gate Pass Requests</title>
+  <link rel="stylesheet" href="/style/admin-panel.css"> <!-- Link to the CSS file -->
+</head>
+<body>
+  <header>
+    <h1>Admin Panel - Gate Pass Requests</h1>
+  </header>
+   
+  <main>
+    <div class="container">
+      <table class="gatepass-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>RRN</th>
+            <th>Degree</th>
+            <th>Block & Room</th>
+            <th>Time Out</th>
+            <th>Time In</th>
+            <th>Reason</th>
+            <th>Approve</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% gatepassRequests.forEach(gatepass => { %>
+            <tr>
+              <td><%= gatepass.name %></td>
+              <td><%= gatepass.rrn %></td>
+              <td><%= gatepass.degree %></td>
+              <td><%= gatepass.block_room %></td>
+              <td><%= gatepass.time_out %></td>
+              <td><%= gatepass.time_in %></td>
+              <td><%= gatepass.reason %></td>
+              <td>
+                <!-- Form to approve the gatepass -->
+                <form action="/approve-gatepass/<%= gatepass.id %>" method="POST">
+                  <button type="submit" class="approve-btn">Approve</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+      <% if (locals.successMessage) { %>
+        <h1>
+            <%= successMessage %>
+        </h1>
+    <% } else { %>
+        <h1></h1>
+    <% } %>
+    
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 College Management System</p>
+  </footer>
+</body>
+</html>

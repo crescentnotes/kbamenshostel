@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative; /* Necessary for absolute positioning of the pseudo-element */
+            overflow: hidden; /* Prevent scroll bars due to pseudo-element */
+        }
+
+        /* Background overlay with blur */
+        .background-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("/images/home.jpg");
+            background-size: cover;
+            background-position: center;
+            filter: blur(6px);
+            z-index: -1; /* Ensures it is behind the content */
+        }
+
+        .login-container {
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        .login-container h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .login-container label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            text-align: left;
+        }
+
+        .login-container input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .password-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-container input {
+            width: calc(100% - 40px);
+            padding-right: 40px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #555;
+        }
+
+        .login-container input.error {
+            border-color: red;
+        }
+
+        .login-container .submit-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .login-container .submit-button:hover {
+            background-color: #555;
+        }
+
+        .login-container a {
+            display: block;
+            margin-top: 10px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .login-container a:hover {
+            text-decoration: underline;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            color: #555;
+            background: none;
+            border: none;
+            cursor: pointer;
+            outline: none;
+            padding: 0;
+        }
+
+        .close-button:hover {
+            color: #000;
+        }
+
+        .regandfor {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #error-message {
+            color: red;
+            display: none;
+        }
+         
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="background-overlay"></div>
+    <div class="login-container">
+        <button class="close-button" onclick="history.back()">×</button>
+        <h1>Login</h1>
+        <form id="loginForm">
+            <label for="username">Email:</label>
+            <input type="email" id="username" name="username" required />
+            <label for="password">Password:</label>
+            <div class="password-container">
+                <input type="password" id="password" name="password" required />
+                <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+            </div>
+            <button type="submit" class="submit-button">Login</button>
+            <p id="error-message"></p>
+        </form>
+        <div class="regandfor">
+            <a href="/register">New user? Register</a>
+            <a href="/password-reset">Forgot password?</a>
+        </div>
+    </div>
+    
+    <script>
+         document.getElementById('loginForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const errorMessage = document.getElementById('error-message');
+
+    const username = usernameInput.value;  // Email value
+    const password = passwordInput.value;  // Password value
+
+    fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })  // Send email and password as JSON
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.message);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        window.location.href = '/';
+    })
+    .catch(error => {
+        errorMessage.textContent = error.message;
+        errorMessage.style.display = 'block';
+        if (error.message === 'Incorrect Password') {
+            passwordInput.classList.add('error');
+            passwordInput.value = '';
+        } else if (error.message === 'User not found') {
+            usernameInput.classList.add('error');
+            passwordInput.classList.add('error');
+            usernameInput.value = '';
+            passwordInput.value = '';
+        }
+    });
+});
+
+
+        const togglePassword = document.getElementById('togglePassword');
+        const password = document.getElementById('password');
+
+        togglePassword.addEventListener('click', function () {
+            // Toggle the type attribute
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            // Toggle the eye / eye slash icon
+            this.classList.toggle('fa-eye-slash');
+        });
+    </script>
+</body>
+</html>

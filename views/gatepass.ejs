@@ -1,0 +1,134 @@
+<%- include('partials/header') %>
+
+<section>
+    <div class="container">
+        <div class="box">
+            <!-- Logo at the top center -->
+            <div class="gatepass-logo">
+                <img src="/images/gatepass-logo.jpg" alt="Hostel Logo">
+            </div>
+
+            <!-- Gate Pass Form -->
+            <form id="gatepassForm">
+                <!-- Form fields -->
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your name" required>
+
+                <label for="rrn">RRN/Application Number</label>
+                <input type="text" id="rrn" name="rrn" placeholder="Enter RRN or application number" required>
+
+                <label for="degree">Department/Degree/Year</label>
+                <input type="text" id="degree" name="degree" placeholder="Enter department, degree, and year" required>
+
+                <label for="block_room">Block and Room Number</label>
+                <input type="text" id="block_room" name="block_room" placeholder="Enter block and room number" required>
+
+                <label for="time_out">Date and Time Out</label>
+                <input type="datetime-local" id="time_out" name="time_out" required>
+
+                <label for="time_in">Date and Time In</label>
+                <input type="datetime-local" id="time_in" name="time_in" required>
+
+                <label for="reason">Reason for Gate Pass</label>
+                <input type="text" id="reason" name="reason" placeholder="Enter the reason for the gate pass" required>
+
+                <label for="student_contact">Student Contact</label>
+                <input type="tel" id="student_contact" name="student_contact" placeholder="Enter your contact number" required>
+
+                <label for="parent_contact">Parent Contact</label>
+                <input type="tel" id="parent_contact" name="parent_contact" placeholder="Enter your parent's contact number" required>
+
+                <!-- RT Name dropdown -->
+                <label for="rt_name">RT Name</label>
+                <select id="rt_name" name="rt_name" required>
+                    <option value="" disabled selected>Select RT Name</option>
+                    <option value="RT 1">RT 1</option>
+                    <option value="RT 2">RT 2</option>
+                    <option value="RT 3">RT 3</option>
+                    <option value="RT 4">RT 4</option>
+                </select>
+
+                <!-- Submit button -->
+                <button type="submit" class="housekeeping-submit-btn">Submit Gate Pass Request</button>
+                <input type="hidden" name="status" value="pending">
+            </form>
+
+            <!-- Display Success or Error Message Below the Form -->
+            <div id="confirmation-message" style="margin-top: 20px;"></div>
+
+            <!-- Error message for form submission -->
+            <div id="error-message" style="color: red; margin-top: 20px;"></div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.getElementById('gatepassForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent traditional form submission
+
+        const name = document.getElementById('name').value;
+        const rrn = document.getElementById('rrn').value;
+        const degree = document.getElementById('degree').value;
+        const block_room = document.getElementById('block_room').value;
+        const time_out = document.getElementById('time_out').value;
+        const time_in = document.getElementById('time_in').value;
+        const reason = document.getElementById('reason').value;
+        const student_contact = document.getElementById('student_contact').value;
+        const parent_contact = document.getElementById('parent_contact').value;
+        const rt_name = document.getElementById('rt_name').value;
+
+        // Ensure RT name is selected
+        if (!rt_name) {
+            alert("Please select an RT Name");
+            return;
+        }
+
+        // POST the form data using fetch API
+        fetch('/gatepass', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name,
+                rrn,
+                degree,
+                block_room,
+                time_out,
+                time_in,
+                reason,
+                student_contact,
+                parent_contact,
+                rt_name,
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const confirmationMessage = document.getElementById('confirmation-message');
+            const errorMessage = document.getElementById('error-message');
+            
+            // Clear previous messages
+            confirmationMessage.textContent = '';
+            errorMessage.textContent = '';
+
+            if (data.message) {
+                if (data.success) {
+                    // Display success message in green
+                    confirmationMessage.textContent = data.message;
+                    confirmationMessage.style.color = 'green';
+                } else {
+                    // Display error message in red
+                    errorMessage.textContent = data.message;
+                }
+            } else {
+                errorMessage.textContent = 'An error occurred. Please try again.';
+            }
+        })
+        .catch(error => {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = 'An error occurred. Please try again.';
+        });
+    });
+</script>
+
+<%- include('partials/footer') %>
