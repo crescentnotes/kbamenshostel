@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();  // Import the default export
 const { Pool } = pkg; // Extract Pool from the imported package
 
- const pool = new pg.Client({
+ const pool = new pool({
   user: 'postgres.rqibetocqeuusrgsjrhi',  // Your database username
   host: 'aws-0-ap-southeast-1.pooler.supabase.com',  // Host URL
   database: 'postgres',  // Database name
